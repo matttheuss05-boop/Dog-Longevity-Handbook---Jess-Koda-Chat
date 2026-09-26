@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #000000;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <title>Mensagem de Texto • SMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      background-color: #000000 !important;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      -webkit-font-smoothing: antialiased;
+    }
+    .sms-bubble-bot {
+      position: relative;
+      background-color: #26252a;
+      color: #ffffff;
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+    }
+    .sms-bubble-user {
+      position: relative;
+      background-color: #34c759;
+      color: #ffffff;
+      border-radius: 18px;
+      border-bottom-right-radius: 4px;
+    }
+    .sms-bubble-bot::before {
+      content: ""; position: absolute; bottom: 0; left: -6px; width: 12px; height: 14px;
+      background-color: #26252a; border-bottom-right-radius: 10px; z-index: 0;
+    }
+    .sms-bubble-bot::after {
+      content: ""; position: absolute; bottom: 0; left: -8px; width: 8px; height: 14px;
+      background-color: #000000; border-bottom-right-radius: 8px; z-index: 1;
+    }
+    .sms-bubble-user::before {
+      content: ""; position: absolute; bottom: 0; right: -6px; width: 12px; height: 14px;
+      background-color: #34c759; border-bottom-left-radius: 10px; z-index: 0;
+    }
+    .sms-bubble-user::after {
+      content: ""; position: absolute; bottom: 0; right: -8px; width: 8px; height: 14px;
+      background-color: #000000; border-bottom-left-radius: 8px; z-index: 1;
+    }
+    @keyframes typingBounceDark {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+    .dot-1 { animation: typingBounceDark 1.2s infinite ease-in-out; animation-delay: 0s; }
+    .dot-2 { animation: typingBounceDark 1.2s infinite ease-in-out; animation-delay: 0.18s; }
+    .dot-3 { animation: typingBounceDark 1.2s infinite ease-in-out; animation-delay: 0.36s; }
+    .no-scroll::-webkit-scrollbar { display: none; }
+    .no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen bg-black">
+
+  <div class="w-full max-w-md h-screen sm:h-[844px] bg-[#000000] flex flex-col relative overflow-hidden sm:border sm:border-zinc-800 sm:rounded-[44px]">
+    
+    <!-- Header Exato da Imagem: < 822 | Avatar redondo | 27531 > -->
+    <header class="bg-[#000000] px-4 pt-3 pb-2 flex items-center justify-between z-30 shrink-0 select-none">
+      <div class="flex items-center gap-1 cursor-pointer" onclick="restartChat()">
+        <svg class="w-6 h-6 text-[#0a84ff]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        <span class="bg-[#0a84ff] text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+          822
+        </span>
+      </div>
+
+      <div class="flex flex-col items-center -ml-6">
+        <div class="w-12 h-12 rounded-full bg-[#8e8e93] flex items-center justify-center text-white overflow-hidden shadow-sm">
+          <svg class="w-8 h-8 text-white mt-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <div class="flex items-center text-[#8e8e93] text-[13px] font-normal mt-1 cursor-pointer">
+          <span>27531</span>
+          <svg class="w-3.5 h-3.5 ml-0.5 text-[#8e8e93]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="w-10"></div>
+    </header>
+
+    <!-- Subheader e Timestamp Inicial do Print -->
+    <div class="text-center pt-1 pb-2 select-none shrink-0 bg-[#000000]">
+      <div class="text-[12.5px] text-[#8e8e93] font-normal">Mensagem de Texto • SMS</div>
+      <div class="text-[11.5px] text-[#8e8e93] font-normal mt-0.5">sex., 3 de abr., 08:09</div>
+    </div>
+
+    <!-- Feed de Mensagens do Chat -->
+    <main id="chat-messages" class="flex-1 overflow-y-auto px-4 py-2 space-y-3.5 no-scroll bg-[#000000]">
+      <!-- Mensagens inseridas via JS -->
+    </main>
+
+    <!-- Indicador de Digitando (balão escuro com 3 pontinhos) -->
+    <div id="typing-indicator" class="px-4 py-1.5 hidden flex items-center bg-[#000000]">
+      <div class="sms-bubble-bot px-4 py-3 inline-flex items-center gap-1.5 z-10">
+        <span class="w-2 h-2 bg-[#8e8e93] rounded-full dot-1"></span>
+        <span class="w-2 h-2 bg-[#8e8e93] rounded-full dot-2"></span>
+        <span class="w-2 h-2 bg-[#8e8e93] rounded-full dot-3"></span>
+      </div>
+    </div>
+
+    <!-- Rodapé: Opções de Escolha do Usuário -->
+    <div id="chat-actions" class="px-4 pb-2 z-30 shrink-0 bg-[#000000]">
+      <div id="options-container" class="space-y-2"></div>
+    </div>
+
+    <!-- "Filtrado por SMS Filter" exatamente como no print -->
+    <div class="text-center text-[11.5px] text-[#636366] pb-1.5 select-none bg-[#000000]">
+      Filtrado por SMS Filter
+    </div>
+
+    <!-- Barra de Input SMS Falsa do iPhone em Dark Mode -->
+    <footer class="bg-[#000000] px-3 pb-2 pt-1 flex items-center gap-2.5 z-30 shrink-0 select-none">
+      <div class="w-8 h-8 rounded-full bg-[#2c2c2e] flex items-center justify-center text-[#8e8e93] text-xl font-light cursor-pointer">
+        +
+      </div>
+      <div class="flex-1 bg-[#1c1c1e] text-[#8e8e93] text-[15px] px-4 py-1.5 rounded-full flex items-center justify-between border border-[#2c2c2e]">
+        <span>Mensagem de Texto • SMS</span>
+      </div>
+      <div class="w-7 h-7 flex items-center justify-center text-[#8e8e93] cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+        </svg>
+      </div>
+    </footer>
+
+    <!-- Barra Home Indicator do iOS -->
+    <div class="w-32 h-1 bg-white/90 rounded-full mx-auto mb-2 mt-1 shrink-0"></div>
+
+  </div>
+
+  <script>
+    const CHECKOUT_URL = "URL_DA_WHOP";
+    const messagesEl = document.getElementById('chat-messages');
+    const typingEl = document.getElementById('typing-indicator');
+    const optionsEl = document.getElementById('options-container');
+
+    function scrollToBottom() {
+      setTimeout(() => {
+        messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+      }, 50);
+    }
+
+    function showTyping() { typingEl.classList.remove('hidden'); scrollToBottom(); }
+    function hideTyping() { typingEl.classList.add('hidden'); }
+
+    function addTimestamp(text) {
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'text-center py-2 text-[12px] text-[#8e8e93] font-normal select-none';
+      timeDiv.innerText = text;
+      messagesEl.appendChild(timeDiv);
+    }
+
+    function addBotText(text, timestamp) {
+      if (timestamp) addTimestamp(timestamp);
+      const div = document.createElement('div');
+      div.className = 'flex justify-start w-full';
+      div.innerHTML = `
+        <div class="sms-bubble-bot text-white text-[15.5px] leading-relaxed px-4 py-2.5 max-w-[85%] break-words z-10">
+          ${text}
+        </div>
+      `;
+      messagesEl.appendChild(div);
+      scrollToBottom();
+    }
+
+    function addBotKodaImage() {
+      const div = document.createElement('div');
+      div.className = 'flex justify-start w-full';
+      div.innerHTML = `
+        <div class="sms-bubble-bot p-2.5 max-w-[88%] z-10">
+          <div class="bg-[#1c1c1e] rounded-2xl p-4 border border-[#3a3a3c] text-center">
+            <div class="w-16 h-16 rounded-full bg-[#2c2c2e] border border-amber-500/40 mx-auto flex items-center justify-center text-3xl mb-2">
+              🐕
+            </div>
+            <h4 class="font-bold text-white text-sm">Jess & Koda 🐾</h4>
+            <p class="text-xs text-gray-300 mt-1 leading-snug">
+              Kitchen testing holistic herbs & natural remedies for Koda
+            </p>
+            <div class="mt-2.5 inline-block bg-amber-900/40 text-amber-300 border border-amber-600/40 text-[11px] font-medium px-2.5 py-0.5 rounded-full">
+              ❤️ Koda energetic & pain-free!
+            </div>
+          </div>
+        </div>
+      `;
+      messagesEl.appendChild(div);
+      scrollToBottom();
+    }
+
+    function addBotBooksImage() {
+      const div = document.createElement('div');
+      div.className = 'flex justify-start w-full';
+      div.innerHTML = `
+        <div class="sms-bubble-bot p-2.5 max-w-[88%] z-10">
+          <div class="bg-[#1c1c1e] rounded-2xl p-3.5 border border-[#3a3a3c]">
+            <div class="flex items-center justify-between pb-2 border-b border-[#2c2c2e]">
+              <span class="text-[11px] font-bold text-emerald-400">4-IN-1 COMPLETE DIGITAL BUNDLE</span>
+              <span class="text-[10px] font-extrabold bg-[#34c759] text-black px-2 py-0.5 rounded-full">SAVE 75%</span>
+            </div>
+            <div class="mt-3 space-y-2 text-left">
+              <div class="bg-[#2c2c2e] rounded-xl p-2.5 border border-zinc-700 flex items-center gap-2.5">
+                <div class="w-8 h-10 bg-emerald-600 rounded text-white flex items-center justify-center text-sm font-bold">📖</div>
+                <div>
+                  <p class="font-bold text-white text-xs">The Dog Longevity Handbook</p>
+                  <p class="text-[11px] text-emerald-400">26 Step-by-Step Home Remedies</p>
+                </div>
+              </div>
+              <div class="bg-black/50 rounded-xl p-2.5 border border-zinc-800 space-y-1 text-[11px] text-gray-300">
+                <p class="text-[10px] font-bold text-white uppercase tracking-wider">🎁 Plus 3 Free Bonuses Included:</p>
+                <p class="flex items-center gap-1.5"><span class="text-[#34c759] font-bold">✓</span> Healthy Snacks recipes</p>
+                <p class="flex items-center gap-1.5"><span class="text-[#34c759] font-bold">✓</span> Calming Canine Massages guide</p>
+                <p class="flex items-center gap-1.5"><span class="text-[#34c759] font-bold">✓</span> Toxic Food Blacklist</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      messagesEl.appendChild(div);
+      scrollToBottom();
+    }
+
+    function addUserText(text) {
+      const div = document.createElement('div');
+      div.className = 'flex justify-end w-full';
+      div.innerHTML = `
+        <div class="sms-bubble-user text-white text-[15.5px] leading-relaxed px-4 py-2.5 max-w-[85%] break-words z-10">
+          ${text}
+        </div>
+      `;
+      messagesEl.appendChild(div);
+      scrollToBottom();
+    }
+
+    function setOptions(options, onSelect) {
+      optionsEl.innerHTML = '';
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full py-3 px-4 bg-[#1c1c1e] hover:bg-[#2c2c2e] active:scale-[0.98] text-[#34c759] border border-[#34c759]/60 font-medium text-[15px] rounded-xl transition-all cursor-pointer text-center block shadow-md';
+        btn.innerText = opt;
+        btn.onclick = () => {
+          optionsEl.innerHTML = '';
+          addUserText(opt);
+          onSelect(opt);
+        };
+        optionsEl.appendChild(btn);
+      });
+      scrollToBottom();
+    }
+
+    function showFinalCTA() {
+      optionsEl.innerHTML = `
+        <div class="space-y-2">
+          <a href="${CHECKOUT_URL}" target="_blank" rel="noopener noreferrer" class="w-full h-14 bg-[#34c759] hover:bg-green-500 active:scale-[0.98] text-white font-bold text-[16px] rounded-xl shadow-lg shadow-green-900/40 transition-all flex items-center justify-center gap-2 text-center decoration-0 cursor-pointer">
+            <span>Get The Handbook + Bonuses ($27)</span>
+            <svg class="w-4 h-4 ml-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </a>
+          <div class="flex items-center justify-center gap-3 text-[11px] text-[#8e8e93] pt-0.5">
+            <span>🔒 256-Bit SSL</span>
+            <span>·</span>
+            <span>🛡️ 30-Day Guarantee</span>
+            <span>·</span>
+            <span>⚡ Instant PDF</span>
+          </div>
+        </div>
+      `;
+      scrollToBottom();
+    }
+
+    // PASSO 1
+    function startPasso1() {
+      setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+          hideTyping();
+          addBotText("Hi! I'm Jess, and this fluffy guy next to me is Koda. 🐾");
+          setTimeout(() => {
+            showTyping();
+            setTimeout(() => {
+              hideTyping();
+              addBotKodaImage();
+              setTimeout(() => {
+                showTyping();
+                setTimeout(() => {
+                  hideTyping();
+                  addBotText("I'm so glad you're here. Are you looking for natural, safe ways to help your dog live a longer, happier life?");
+                  setOptions(["Yes, absolutely! ❤️"], startPasso2);
+                }, 2200);
+              }, 400);
+            }, 1600);
+          }, 400);
+        }, 1800);
+      }, 400);
+    }
+
+    // PASSO 2
+    function startPasso2() {
+      setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+          hideTyping();
+          addBotText("That's exactly why I started making my own holistic remedies.", "Hoje, 15:20");
+          setTimeout(() => {
+            showTyping();
+            setTimeout(() => {
+              hideTyping();
+              addBotText("What is your dog struggling with the most right now?");
+              setOptions([
+                "Joint pain & mobility",
+                "Gut health & digestion",
+                "Low energy",
+                "I just want them to live longer!"
+              ], startPasso3);
+            }, 2100);
+          }, 400);
+        }, 1900);
+      }, 400);
+    }
+
+    // PASSO 3
+    function startPasso3() {
+      setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+          hideTyping();
+          addBotText("I totally understand. It’s so hard seeing them slow down or feel uncomfortable. 🥺");
+          setTimeout(() => {
+            showTyping();
+            setTimeout(() => {
+              hideTyping();
+              addBotText("When Koda was struggling, the traditional vet bills were getting insane, and I felt so helpless...");
+              setTimeout(() => {
+                showTyping();
+                setTimeout(() => {
+                  hideTyping();
+                  addBotText("Have you ever tried making natural remedies at home for them?");
+                  setOptions([
+                    "Yes, a few times",
+                    "Never tried it",
+                    "Don't know where to start"
+                  ], startPasso4);
+                }, 2000);
+              }, 400);
+            }, 2300);
+          }, 400);
+        }, 2000);
+      }, 400);
+    }
+
+    // PASSO 4
+    function startPasso4() {
+      setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+          hideTyping();
+          addBotText("That makes perfect sense.", "Hoje, 19:35");
+          setTimeout(() => {
+            showTyping();
+            setTimeout(() => {
+              hideTyping();
+              addBotText("I started researching and testing natural herbs right here in my kitchen. 🌿");
+              setTimeout(() => {
+                showTyping();
+                setTimeout(() => {
+                  hideTyping();
+                  addBotText("The transformation was unbelievable. He got his energy back, his coat is shining, and he runs around like a puppy again!");
+                  setTimeout(() => {
+                    showTyping();
+                    setTimeout(() => {
+                      hideTyping();
+                      addBotText("Would you like to see the exact recipes I use for him?");
+                      setOptions([
+                        "Yes! Show me the recipes",
+                        "I'd love to see them"
+                      ], startPasso5);
+                    }, 1900);
+                  }, 400);
+                }, 2400);
+              }, 400);
+            }, 2100);
+          }, 400);
+        }, 1600);
+      }, 400);
+    }
+
+    // PASSO 5 (FINAL)
+    function startPasso5() {
+      setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+          hideTyping();
+          addBotText("I finally organized everything into a complete digital guide called The Dog Longevity Handbook. It has 26 easy, step-by-step remedies you can make at home.");
+          setTimeout(() => {
+            showTyping();
+            setTimeout(() => {
+              hideTyping();
+              addBotText("And since you're here today, I'm also including 3 free bonuses: my Healthy Snacks recipes, the Calming Canine Massages guide, and the Toxic Food Blacklist! 🎁");
+              setTimeout(() => {
+                showTyping();
+                setTimeout(() => {
+                  hideTyping();
+                  addBotBooksImage();
+                  setTimeout(() => {
+                    showTyping();
+                    setTimeout(() => {
+                      hideTyping();
+                      addBotText("It's a 100% digital bundle, so you can download the PDFs and start reading on your phone right now. Ready to help your best friend thrive?");
+                      showFinalCTA();
+                    }, 2200);
+                  }, 400);
+                }, 1700);
+              }, 400);
+            }, 2200);
+          }, 400);
+        }, 2300);
+      }, 400);
+    }
+
+    function restartChat() {
+      messagesEl.innerHTML = '';
+      optionsEl.innerHTML = '';
+      startPasso1();
+    }
+
+    window.addEventListener('DOMContentLoaded', startPasso1);
+  </script>
+</body>
+</html>

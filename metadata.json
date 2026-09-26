@@ -1,0 +1,6 @@
+{
+  "name": "Dog Longevity Handbook - Jess & Koda Chat",
+  "description": "High-converting iMessage-style conversational funnel for The Dog Longevity Handbook by Jess & Koda.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
