@@ -104,7 +104,7 @@ export default function App() {
       if (!feed) return;
       const row = document.createElement('div');
       row.className = 'msg-row bot';
-      row.innerHTML = `<img src="${src}" alt="${alt}" style="max-width: 80%; border-radius: 16px; margin-top: 8px; margin-bottom: 8px; display: block; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);" loading="eager" decoding="async" />`;
+      row.innerHTML = `<img src="${src}" alt="${alt}" style="max-width: 80%; border-radius: 16px; margin-top: 8px; margin-bottom: 8px;">`;
       feed.appendChild(row);
       const img = row.querySelector('img');
       if (img) {
@@ -148,7 +148,7 @@ export default function App() {
       row.innerHTML = `
         <div class="video-attachment">
             <video controls playsinline preload="metadata" width="100%">
-                <source src="https://www.image2url.com/r2/default/videos/1790440845850-c639285c-1f25-4f7d-9830-51a5a4d03593.mp4" type="video/mp4">
+                <source src="https://www.image2url.com/r2/default/videos/1790614561570-6c624798-b07c-4a78-84a4-68c10e885671.mp4" type="video/mp4">
             </video>
         </div>
       `;
@@ -185,7 +185,7 @@ export default function App() {
       row.innerHTML = `
         <div class="video-attachment">
             <video controls playsinline preload="metadata" width="100%">
-                <source src="https://www.image2url.com/r2/default/videos/1790440927367-44f60eeb-9890-43dd-8563-c1e70247cd31.mp4" type="video/mp4">
+                <source src="https://www.image2url.com/r2/default/videos/1790614598431-a1b6397d-b53b-4ed3-8cee-bc059fce7fda.mp4" type="video/mp4">
             </video>
         </div>
       `;
@@ -700,7 +700,7 @@ export default function App() {
                         showTyping();
                         safeTimeout(() => {
                           hideTyping();
-                          addBotImage(imgSarahReview, "Sarah DM Review");
+                          addBotImage(imgSarahReview, "Customer review");
 
                           safeTimeout(() => {
                             showTyping();
