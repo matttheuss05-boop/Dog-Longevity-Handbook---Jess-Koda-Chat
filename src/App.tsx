@@ -22,13 +22,6 @@ export default function App() {
     let userChoiceStep2 = "";
     let userChoiceStep3 = "";
     let userChoiceStep4 = "";
-    let hasUserInteracted = false;
-
-    const recordUserInteraction = () => {
-      hasUserInteracted = true;
-    };
-    window.addEventListener('click', recordUserInteraction, { capture: true, passive: true });
-    window.addEventListener('touchstart', recordUserInteraction, { capture: true, passive: true });
 
     function formatTopHeaderDate(d: Date): string {
       const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -107,6 +100,25 @@ export default function App() {
       scrollToBottom();
     }
 
+    function addBotImage(src: string, alt: string) {
+      if (!feed) return;
+      const row = document.createElement('div');
+      row.className = 'msg-row bot';
+      row.innerHTML = `<img src="${src}" alt="${alt}" style="max-width: 80%; border-radius: 16px; margin-top: 8px; margin-bottom: 8px; display: block; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);" loading="eager" decoding="async" />`;
+      feed.appendChild(row);
+      const img = row.querySelector('img');
+      if (img) {
+        img.onload = () => {
+          scrollToBottom();
+          setTimeout(scrollToBottom, 60);
+          setTimeout(scrollToBottom, 180);
+        };
+      }
+      scrollToBottom();
+      setTimeout(scrollToBottom, 60);
+      setTimeout(scrollToBottom, 180);
+    }
+
     function addBotVideo(duration: string, label: string = "Jess • Quick Video") {
       if (!feed) return;
       const row = document.createElement('div');
@@ -132,18 +144,12 @@ export default function App() {
       if (!feed) return;
       const row = document.createElement('div');
       row.className = 'msg-row bot';
-      const videoAttrs = hasUserInteracted
-        ? 'width="100%" autoplay playsinline preload="auto"'
-        : 'width="100%" controls playsinline preload="auto"';
 
       row.innerHTML = `
-        <div class="video-attachment" style="max-width: 260px; border-radius: 18px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; background-color: #1a1a1a;" onclick="const v = this.querySelector('video'); const b = this.querySelector('.play-btn-overlay'); if(v.ended){v.currentTime=0; v.play(); if(b) b.style.display='none';}else if(v.paused){v.play(); if(b) b.style.display='none';}else{v.pause(); if(b) b.style.display='flex';}">
-            <video ${videoAttrs} style="border-radius: 18px; cursor: pointer; display: block;">
+        <div class="video-attachment">
+            <video controls playsinline preload="metadata" width="100%">
                 <source src="https://www.image2url.com/r2/default/videos/1790440845850-c639285c-1f25-4f7d-9830-51a5a4d03593.mp4" type="video/mp4">
             </video>
-            <div class="play-btn-overlay" style="position: absolute; width: 50px; height: 50px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: none;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-            </div>
         </div>
       `;
       feed.appendChild(row);
@@ -152,23 +158,6 @@ export default function App() {
       if (vid) {
         vid.addEventListener('loadedmetadata', scrollToBottom);
         vid.addEventListener('loadeddata', scrollToBottom);
-
-        const btn = row.querySelector('.play-btn-overlay') as HTMLElement | null;
-        vid.addEventListener('play', () => {
-          if (btn) btn.style.display = 'none';
-        });
-        vid.addEventListener('pause', () => {
-          if (!vid.ended && btn) btn.style.display = 'flex';
-        });
-
-        if (hasUserInteracted) {
-          vid.play().then(() => {
-            if (btn) btn.style.display = 'none';
-          }).catch(() => {
-            vid.controls = true;
-            if (btn) btn.style.display = 'flex';
-          });
-        }
 
         let resumed = false;
         const triggerResume = () => {
@@ -179,8 +168,6 @@ export default function App() {
         };
 
         vid.addEventListener('ended', () => {
-          vid.pause();
-          if (btn) btn.style.display = 'flex';
           triggerResume();
         });
       }
@@ -194,18 +181,12 @@ export default function App() {
       if (!feed) return;
       const row = document.createElement('div');
       row.className = 'msg-row bot';
-      const videoAttrs = hasUserInteracted
-        ? 'width="100%" autoplay playsinline preload="auto"'
-        : 'width="100%" controls playsinline preload="auto"';
 
       row.innerHTML = `
-        <div class="video-attachment" style="max-width: 260px; border-radius: 18px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; background-color: #1a1a1a;" onclick="const v = this.querySelector('video'); const b = this.querySelector('.play-btn-overlay'); if(v.ended){v.currentTime=0; v.play(); if(b) b.style.display='none';}else if(v.paused){v.play(); if(b) b.style.display='none';}else{v.pause(); if(b) b.style.display='flex';}">
-            <video id="jess-video-2" ${videoAttrs} style="border-radius: 18px; cursor: pointer; display: block;">
+        <div class="video-attachment">
+            <video controls playsinline preload="metadata" width="100%">
                 <source src="https://www.image2url.com/r2/default/videos/1790440927367-44f60eeb-9890-43dd-8563-c1e70247cd31.mp4" type="video/mp4">
             </video>
-            <div class="play-btn-overlay" style="position: absolute; width: 50px; height: 50px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: none;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-            </div>
         </div>
       `;
       feed.appendChild(row);
@@ -214,23 +195,6 @@ export default function App() {
       if (vid) {
         vid.addEventListener('loadedmetadata', scrollToBottom);
         vid.addEventListener('loadeddata', scrollToBottom);
-
-        const btn = row.querySelector('.play-btn-overlay') as HTMLElement | null;
-        vid.addEventListener('play', () => {
-          if (btn) btn.style.display = 'none';
-        });
-        vid.addEventListener('pause', () => {
-          if (!vid.ended && btn) btn.style.display = 'flex';
-        });
-
-        if (hasUserInteracted) {
-          vid.play().then(() => {
-            if (btn) btn.style.display = 'none';
-          }).catch(() => {
-            vid.controls = true;
-            if (btn) btn.style.display = 'flex';
-          });
-        }
 
         let resumed = false;
         const triggerResume = () => {
@@ -241,8 +205,6 @@ export default function App() {
         };
 
         vid.addEventListener('ended', () => {
-          vid.pause();
-          if (btn) btn.style.display = 'flex';
           triggerResume();
         });
       }
@@ -704,6 +666,9 @@ export default function App() {
       const msg1 = "All done 🐾";
       const msg2 = "Your focus is helping with their health, and you need simple, budget-friendly recipes with easy-to-find ingredients.";
       const msg3 = "So let me show you something I've kept for a long time, look 👇";
+      const msgSocialProof = "But first, look at the DM I got this morning from Sarah. She was so relieved to finally have clear safety tips on exactly what her Golden Retriever can and cannot eat 🥺👇";
+      const imgSarahReview = "https://i.postimg.cc/T3Fpy0Vx/depoimento5-webp-2K-20260928122533-(1).jpg";
+      const msgIntroVideo2 = "Okay, here is what I made for you:";
       const mediaAttachmentVideo2 = '<div class="video-attachment"><video id="jess-video-2">...</video></div>';
 
       safeTimeout(() => {
@@ -724,47 +689,96 @@ export default function App() {
                   hideTyping();
                   addBotText(msg3);
 
+                  // INSERÇÃO 1: Prova Social (Antes do Vídeo 2)
                   safeTimeout(() => {
                     showTyping();
                     safeTimeout(() => {
                       hideTyping();
-                      // Renderiza o Vídeo 2 real e PAUSA o fluxo do chat.
-                      // O fluxo só continua após o usuário assistir ao vídeo até ao último segundo (evento 'ended').
-                      addBotRealVideo2(() => {
-                        if (session !== currentSessionId) return;
+                      addBotText(msgSocialProof);
 
-                        const msgOfferIntro = "This is it — I put all my holistic recipes in one place, super affordable, so you can help your best friend thrive without the expensive vet bills.";
-                        const msgLook = "Look at what you're getting 👇";
-                        const mediaProductCard = '<div class="product-card-container">';
-
+                      safeTimeout(() => {
+                        showTyping();
                         safeTimeout(() => {
-                          showTyping();
+                          hideTyping();
+                          addBotImage(imgSarahReview, "Sarah DM Review");
+
                           safeTimeout(() => {
-                            hideTyping();
-                            addBotText(msgOfferIntro);
-
+                            showTyping();
                             safeTimeout(() => {
-                              showTyping();
+                              hideTyping();
+                              addBotText(msgIntroVideo2);
+
                               safeTimeout(() => {
-                                hideTyping();
-                                addBotText(msgLook);
-
+                                showTyping();
                                 safeTimeout(() => {
-                                  showTyping();
-                                  safeTimeout(() => {
-                                    hideTyping();
-                                    addBotProductCard();
-                                  }, getTypingDelay(mediaProductCard), session); // Exceção de mídia: 1500ms
-                                }, 350, session);
+                                  hideTyping();
+                                  // Renderiza o Vídeo 2 real e PAUSA o fluxo do chat.
+                                  // O fluxo só continua após o usuário assistir ao vídeo até ao último segundo (evento 'ended').
+                                  addBotRealVideo2(() => {
+                                    if (session !== currentSessionId) return;
 
-                              }, getTypingDelay(msgLook), session);
-                            }, 350, session);
+                                    const msgOfferIntro = "This is it — I put all my holistic recipes in one place, super affordable, so you can help your best friend thrive without the expensive vet bills.";
+                                    const msgPriceAnchor = "A single vet visit costs like $200 nowadays. I wanted to make this accessible, so my whole handbook costs less than a bag of premium dog treats. And it actually fixes the root cause.";
+                                    const msgGuarantee = "And hey, I take all the risk. If your dog doesn't completely devour these treats, just email me within 30 days and I'll refund 100% of your money. No hard feelings! 🤝";
+                                    const msgLook = "Look at what you're getting 👇";
+                                    const mediaProductCard = '<div class="product-card-container">';
 
-                          }, getTypingDelay(msgOfferIntro), session);
-                        }, 400, session);
-                      });
+                                    safeTimeout(() => {
+                                      showTyping();
+                                      safeTimeout(() => {
+                                        hideTyping();
+                                        addBotText(msgOfferIntro);
 
-                    }, getTypingDelay(mediaAttachmentVideo2), session); // Exceção de mídia: 1500ms
+                                        // INSERÇÃO 2: Ancoragem de Preço e Garantia (Após o Vídeo 2 e antes do Checkout)
+                                        safeTimeout(() => {
+                                          showTyping();
+                                          safeTimeout(() => {
+                                            hideTyping();
+                                            addBotText(msgPriceAnchor);
+
+                                            safeTimeout(() => {
+                                              showTyping();
+                                              safeTimeout(() => {
+                                                hideTyping();
+                                                addBotText(msgGuarantee);
+
+                                                safeTimeout(() => {
+                                                  showTyping();
+                                                  safeTimeout(() => {
+                                                    hideTyping();
+                                                    addBotText(msgLook);
+
+                                                    safeTimeout(() => {
+                                                      showTyping();
+                                                      safeTimeout(() => {
+                                                        hideTyping();
+                                                        addBotProductCard();
+                                                      }, getTypingDelay(mediaProductCard), session); // Exceção de mídia: 1500ms
+                                                    }, 350, session);
+
+                                                  }, getTypingDelay(msgLook), session);
+                                                }, 350, session);
+
+                                              }, 3000, session); // Indicador de digitação: 3 segundos
+                                            }, 350, session);
+
+                                          }, 3000, session); // Indicador de digitação: 3 segundos
+                                        }, 350, session);
+
+                                      }, getTypingDelay(msgOfferIntro), session);
+                                    }, 400, session);
+                                  });
+
+                                }, getTypingDelay(mediaAttachmentVideo2), session); // Exceção de mídia: 1500ms
+                              }, 350, session);
+
+                            }, 3000, session); // Indicador de digitação: 3 segundos
+                          }, 350, session);
+
+                        }, 3000, session); // Indicador de digitação: 3 segundos
+                      }, 350, session);
+
+                    }, 3000, session); // Indicador de digitação: 3 segundos
                   }, 350, session);
 
                 }, getTypingDelay(msg3), session);
@@ -871,8 +885,6 @@ export default function App() {
       currentSessionId++;
       clearAllTimers();
       cleanupExitListeners();
-      window.removeEventListener('click', recordUserInteraction, { capture: true });
-      window.removeEventListener('touchstart', recordUserInteraction, { capture: true });
     };
   }, []);
 

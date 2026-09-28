@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://i.postimg.cc">
   <link rel="preconnect" href="https://www.image2url.com" crossorigin>
   <link rel="preload" as="image" href="https://i.postimg.cc/5yQ9HrTc/Woman-hugging-Siberian-Husky-2K-20260922213242.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="https://i.postimg.cc/T3Fpy0Vx/depoimento5-webp-2K-20260928122533-(1).jpg">
   <link rel="preload" as="image" href="https://i.postimg.cc/MTgBV3Jx/Four-books-on-wooden-counter-2K-20260923131019.jpg" fetchpriority="high">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -52,18 +53,22 @@
       margin: 0 auto;
     }
 
-    /* iOS Dark Mode Translucent Header */
+    /* iOS Dark Mode Translucent Header (Frosted Glass) */
     .ios-header {
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background-color: rgba(28, 28, 30, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       padding: 10px 14px 8px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
-      z-index: 50;
       flex-shrink: 0;
+      height: 84px;
+      margin-bottom: -84px;
     }
 
     .back-button {
@@ -151,10 +156,10 @@
     /* Subheader Meta Information */
     .top-meta-info {
       text-align: center;
-      padding: 14px 16px 6px 16px;
+      padding: 6px 16px 6px 16px;
       flex-shrink: 0;
       user-select: none;
-      background-color: #000000;
+      background-color: transparent;
     }
 
     .top-meta-title {
@@ -179,13 +184,14 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 10px 14px 14px 14px;
+      padding: 94px 14px 14px 14px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      background-color: #000000;
+      background-color: transparent;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
+      z-index: 1;
     }
 
     .chat-messages::-webkit-scrollbar {
@@ -310,6 +316,12 @@
       margin: 2px 0;
       -webkit-mask-image: -webkit-radial-gradient(white, black);
       transform: translateZ(0);
+    }
+
+    .video-attachment video {
+      display: block;
+      width: 100%;
+      border-radius: 18px;
     }
 
     /* VIDEO PLACEHOLDER PLAYER CARD */
